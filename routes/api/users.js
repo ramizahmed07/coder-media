@@ -1,7 +1,7 @@
 const { Router } = require("express");
 const { validationResult, check } = require("express-validator");
 const User = require("../../models/User");
-
+const gravatar = require("gravatar");
 const router = Router();
 
 // @route   POST api/users
@@ -20,6 +20,7 @@ router.post(
     }),
   ],
   async (req, res) => {
+    const { email, password, name } = req.body;
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       res.status(400).json({ errors: errors.array() });
@@ -32,6 +33,17 @@ router.post(
         res.status(400).json({ errors: [{ msg: "User already exists" }] });
       }
       // Get users gravatar
+      const avatar = gravatar.url(email, {
+        s: "200",
+        r: "pg",
+        d: "mm",
+      });
+      user = new User({
+        name,
+        email,
+        password,
+        avatar,
+      });
       // Encrypt password
       // return jsonwebtoken
 
