@@ -1,5 +1,6 @@
 const { Router } = require("express");
 const { validationResult, check } = require("express-validator");
+const User = require("../../models/User");
 
 const router = Router();
 
@@ -18,12 +19,27 @@ router.post(
       min: 6,
     }),
   ],
-  (req, res) => {
+  async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       res.status(400).json({ errors: errors.array() });
     }
-    res.send("User route");
+
+    try {
+      // Check if user exists
+      const user = await User.findOne({ email });
+      if (user) {
+        res.status(400).json({ errors: [{ msg: "User already exists" }] });
+      }
+      // Get users gravatar
+      // Encrypt password
+      // return jsonwebtoken
+
+      res.send("User route");
+    } catch (error) {
+      console.error(error.message);
+      res.status(500).send("Server error");
+    }
   }
 );
 
