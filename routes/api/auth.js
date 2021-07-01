@@ -10,22 +10,20 @@ const router = Router();
 
 // @route   GET api/auth
 // @desc    Test route
-// @access  Public
+// @access  Private
 router.get("/auth", auth, async (req, res) => {
   try {
-    await User.findById(req.user.id).select("-password");
-    res.send(req.user);
+    const user = await User.findById(req.user.id).select("-password");
+    res.send(user);
   } catch (error) {
     console.error(error.message);
     res.status(500).send("Server Error");
   }
-  res.send("auth route");
 });
 
 // @route   POST api/auth
 // @desc    Login User
 // @access  Public
-
 router.post(
   "/auth",
   [
@@ -47,7 +45,7 @@ router.post(
       const isPasswordCorrect = await bcrypt.compare(password, user.password);
       if (!isPasswordCorrect)
         res.status(400).json({ errors: [{ msg: "Invalid credentials" }] });
-      console.log("IS_PASS", isPasswordCorrect);
+
       jwt.sign(
         {
           user: {
