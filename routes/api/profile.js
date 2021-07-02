@@ -1,5 +1,6 @@
 const { Router } = require("express");
 const { check, validationResult } = require("express-validator");
+const mongoose = require("mongoose");
 const auth = require("../../middlewares/auth");
 const Profile = require("../../models/Profile");
 const User = require("../../models/User");
@@ -133,8 +134,8 @@ router.delete("/profile", auth, async (req, res) => {
 // @route   PUT api/profile/experience
 // @desc    Add profile experience
 // @access  Private
-router.delete(
-  "/profile",
+router.put(
+  "/profile/experience",
   [
     auth,
     [
@@ -161,7 +162,7 @@ router.delete(
     };
     try {
       const profile = await Profile.findOne({ user: req.user.id });
-      profile.exprience.unshift(newExp);
+      profile.experience.unshift(newExp);
       await profile.save();
       res.json(profile);
     } catch (error) {
@@ -170,5 +171,31 @@ router.delete(
     }
   }
 );
+
+// @route   DELETE api/profile/experience/:exp_id
+// @desc    Delete profile experience
+// @access  Private
+router.delete("/profile/experience/:exp_id", auth, async (req, res) => {
+  try {
+    const { exp_id } = req.params;
+    const profile = await Profile.findOne({ user: req.user.id });
+    const prev_length = profile.experience.length;
+    console.log("EXP ID", exp_id);
+    profile.experience = profile.experience.filter(
+      (x) => x._id.toString() !== exp_id
+    );
+
+    console.log("Profile EXP", profile.experience);
+
+    if (profile.experience.length === prev_length) {
+      return res.status(400).json({ msg: "Could not delete experience" });
+    }
+    await profile.save();
+    res.json({ msg: "Experience removed" });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send("Server error");
+  }
+});
 
 module.exports = router;
