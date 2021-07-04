@@ -1,4 +1,6 @@
 {
   "mongoURI": "mongodb+srv://ramiz:ramiz123@codermediacluster.0osai.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
-  "jwtSecret": "mypetsnameistitu"
+  "jwtSecret": "mypetsnameistitu",
+  "githubClientId": "744d73ae12b28036561e",
+  "githubSecret": "68924ed0dbae686c6dfb58894374147b8330e425"
   }
